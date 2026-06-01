@@ -1,24 +1,15 @@
-Motor Controller PCB
-A custom-designed two-layer PCB that accepts a wide range of input voltages (5V–12V), uses a buck converter to regulate a clean 3.3V supply for an onboard microcontroller, and drives a brushed DC motor with full speed and direction control — all on a single board designed in Altium Designer.
+Motor Fault Detection PCB
+A custom-designed two-layer PCB built around the RP2040 microcontroller that samples vibration and motion data from a Bosch BMI088 IMU, runs an on-device TinyML model to classify brushed DC motor faults in real time, and drives the motor under test directly from the board — all designed from scratch in Altium Designer.
 What it does
-This board takes a variable DC input (5V–12V), steps it down to 3.3V via a synchronous buck converter for stable microcontroller power, while passing the full input voltage directly to a dedicated motor driver IC. The microcontroller generates PWM signals to control motor speed and direction through the motor driver. The design emphasizes proper ground plane separation and power domain isolation between the noisy switching circuitry and sensitive digital logic.
+This board takes 5V from a USB-C input, passes it directly to a DRV8833 motor driver to run the brushed DC motor, and steps it down to a clean 3.3V via a TPS563201 synchronous buck converter for the RP2040 and onboard sensors. The BMI088 IMU continuously captures high-frequency accelerometer and gyroscope data from the motor, which the RP2040 feeds into a quantized TFLite model to detect fault conditions such as bearing wear, rotor imbalance, and mechanical misalignment — without any external compute required.
 Key features
 
-Wide input voltage range (5V–12V) via buck converter
-Buck converter → 3.3V clean regulated MCU supply
-Motor rail runs directly off input voltage for maximum torque
-Brushed DC motor control with speed and direction via PWM
-Onboard STM32/RP2040 microcontroller
-Mixed-signal PCB layout with isolated power and logic ground domains
-SWD debug header for programming and live debugging
+5V USB-C power input with CC resistor negotiation and ferrite bead filtering
+TPS563201 synchronous buck converter → clean 3.3V regulated supply for MCU and sensors
+Motor rail runs directly off 5V VBUS for full-voltage motor drive
+DRV8833 brushed DC motor driver with PWM speed and direction control
+Bosch BMI088 6-axis IMU (separate accel + gyro dies) for high-fidelity vibration capture
+RP2040 dual-core MCU — one core for sensor sampling, one for TFLite inference
+W25Q16 16Mb QSPI external flash for model and data storage
+On-device fault classification with no PC or cloud dependency
 Designed in Altium Designer
-
-Why this matters
-Mixed-signal PCB design — where high-current power electronics and sensitive digital logic share the same board — is a foundational skill in embedded systems, defense electronics, robotics, and aerospace hardware. Managing noise, ground plane strategy, and voltage regulation on a single board mirrors the exact challenges found in real-world motor drive systems used in UAVs, actuator control systems, and industrial automation.
-More on why this skill set matters in embedded and defense systems: Texas Instruments — Motor Drive & Control Overview
-
-
-Tools used
-
-Altium (schematic and PCB layout)
-STM32CubeIDE / Arduino SDK (firmware)
